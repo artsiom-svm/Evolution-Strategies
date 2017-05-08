@@ -30,5 +30,64 @@
     <ClCompile Include="main.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="network.cpp">
+      <Filter>Resource Files\neural_network</Filter>
+    </ClCompile>
+    <ClCompile Include="layer.cpp">
+      <Filter>Resource Files\neural_network</Filter>
+    </ClCompile>
+    <ClCompile Include="environment.cpp">
+      <Filter>Resource Files\environment</Filter>
+    </ClCompile>
+    <ClCompile Include="tiger_game.cpp">
+      <Filter>Resource Files\environment</Filter>
+    </ClCompile>
+    <ClCompile Include="wumpus_world.cpp">
+      <Filter>Resource Files\environment</Filter>
+    </ClCompile>
+    <ClCompile Include="es.cpp">
+      <Filter>Resource Files\evolution_strategies</Filter>
+    </ClCompile>
+    <ClCompile Include="es_tiger_game.cpp">
+      <Filter>Resource Files\evolution_strategies</Filter>
+    </ClCompile>
+    <ClCompile Include="es_wumpus_world.cpp">
+      <Filter>Resource Files\evolution_strategies</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>Resource Files\neural_network</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="network.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="layer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="environment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tiger_game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wumpus_world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="es.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="es_tiger_game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="es_wumpus_world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="local_includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
