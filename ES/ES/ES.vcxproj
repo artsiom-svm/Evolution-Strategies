@@ -79,11 +79,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>MinSpace</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <HeapReserveSize>
+      </HeapReserveSize>
+      <StackReserveSize>
+      </StackReserveSize>
+      <StackCommitSize>
+      </StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -115,6 +121,7 @@
   <ItemGroup>
     <ClCompile Include="environment.cpp" />
     <ClCompile Include="es.cpp" />
+    <ClCompile Include="es_example.cpp" />
     <ClCompile Include="es_tiger_game.cpp" />
     <ClCompile Include="es_wumpus_world.cpp" />
     <ClCompile Include="layer.cpp" />
@@ -127,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="environment.h" />
     <ClInclude Include="es.h" />
+    <ClInclude Include="es_example.h" />
     <ClInclude Include="es_tiger_game.h" />
     <ClInclude Include="es_wumpus_world.h" />
     <ClInclude Include="layer.h" />

@@ -3,16 +3,34 @@
 #include <iostream>
 #include <ctime>
 #include "matrix.h"
+#include "es_example.h"
+
+std::ostream& operator<<(std::ostream& os, const std::vector<double>& set)
+{
+	os << '[';
+	for (auto d : set)
+		os << d << ' ';
+	os << ']';
+	return os;
+}
 
 int main()
 {
 	try {
-		auto k = neural_network::matrix::rand_init(100, 100, 1);
-		auto m = neural_network::matrix::rand_init(100, 100, 5);
-		long t = std::clock();
-		k*m;
-		std::cout << -(t - std::clock())/(double)CLOCKS_PER_SEC;
-		//std::cout << "done";
+		//example of es on line vector
+		std::vector < double> solution = { 2.5, 0.1, -10.3 };
+		es_example t(solution);
+
+		std::cout << "Real solution : " << solution << std::endl;
+
+		std::cout << "Using ML ES:\n";
+		for (int i = 0; i < 300; i++)
+		{
+			t.evolve();
+			if (i % 20 == 0)
+				std::cout << "iter " << i << ": " << t.getApproximation() << " w\\ stderr: " << t.mean_square_error(t.getApproximation())<< std::endl;
+		}
+
 	}
 	catch (std::exception e) {
 		std::cerr << e.what();

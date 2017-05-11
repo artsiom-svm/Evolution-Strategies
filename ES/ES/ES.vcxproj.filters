@@ -57,6 +57,9 @@
     <ClCompile Include="matrix.cpp">
       <Filter>Resource Files\neural_network</Filter>
     </ClCompile>
+    <ClCompile Include="es_example.cpp">
+      <Filter>Resource Files\evolution_strategies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="network.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="es_example.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
