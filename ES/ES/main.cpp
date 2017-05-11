@@ -18,7 +18,7 @@ int main()
 {
 	try {
 		//example of es on line vector
-		std::vector < double> solution = { 2.5, 0.1, -10.3 };
+		std::vector < double> solution = { 0.5, 0.1, -0.3 };
 		es_example t(solution);
 
 		std::cout << "Real solution : " << solution << std::endl;

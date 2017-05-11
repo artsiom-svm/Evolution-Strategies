@@ -70,11 +70,11 @@ void es_example::evolve()
 	for (size_t i = 0; i < es_example::npop; i++)
 	{
 		//create new guess matrix with noise deviation from current truth
-		std::vector<double> w_try;
+		std::vector<double> w_try(n_tries[i].size());
 		
 		for (size_t j = 0; j < n_tries[i].size();j++)
 		{
-			w_try.push_back(this->tries[j] + es_example::sigma * n_tries[i][j]);
+			w_try[j] = this->tries[j] + es_example::sigma * n_tries[i][j];
 		}
 
 		//push the learning rate from guess
@@ -100,7 +100,7 @@ void es_example::evolve()
 		}
 
 		//update of value
-		tries[i] += es_example::alpha * (es_example::sigma * es_example::npop) * dot;
+		tries[i] += es_example::alpha / (es_example::sigma * es_example::npop) * dot;
 	}
 
 }
