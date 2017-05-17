@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3D330A41-8AA6-4939-8E38-F081C2308E35}</ProjectGuid>
-    <RootNamespace>ES</RootNamespace>
+    <ProjectGuid>{B8AFE8F6-CF3A-446B-9A7D-F04618617F43}</ProjectGuid>
+    <RootNamespace>jvmtest</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -74,30 +74,19 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_131\include;C:\Program Files (x86)\Java\jdk1.8.0_131\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\include;D:\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>C:\Program Files (x86)\Java\jdk1.8.0_131\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\Program Files (x86)\Java\jdk1.8.0_131\lib\jvm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MinSpace</Optimization>
+      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_131\include\win32;C:\Program Files\Java\jdk1.8.0_131\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\include\;D:\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
-      <HeapReserveSize>
-      </HeapReserveSize>
-      <StackReserveSize>
-      </StackReserveSize>
-      <StackCommitSize>
-      </StackCommitSize>
+      <AdditionalDependencies>jvm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files\Java\jdk1.8.0_131\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\Program Files\Java\jdk1.8.0_131\lib\jvm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,30 +116,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="environment.cpp" />
-    <ClCompile Include="es.cpp" />
-    <ClCompile Include="es_example.cpp" />
-    <ClCompile Include="es_tiger_game.cpp" />
-    <ClCompile Include="es_wumpus_world.cpp" />
-    <ClCompile Include="layer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="network.cpp" />
-    <ClCompile Include="tiger_game.cpp" />
-    <ClCompile Include="wumpus_world.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="environment.h" />
-    <ClInclude Include="es.h" />
-    <ClInclude Include="es_example.h" />
-    <ClInclude Include="es_tiger_game.h" />
-    <ClInclude Include="es_wumpus_world.h" />
-    <ClInclude Include="layer.h" />
-    <ClInclude Include="local_includes.h" />
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="network.h" />
-    <ClInclude Include="tiger_game.h" />
-    <ClInclude Include="wumpus_world.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

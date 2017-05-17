@@ -1,7 +1,6 @@
 #pragma once
 #include "es.h"
-class es_tiger_game :
-	public es
+class es_tiger_game
 {
 public:
 	es_tiger_game();

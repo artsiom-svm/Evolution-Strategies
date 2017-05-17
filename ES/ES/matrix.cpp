@@ -1,8 +1,12 @@
 #include "matrix.h"
 
-neural_network::matrix::matrix(): height(0), width(0)
+neural_network::matrix::matrix(const matrix & copy):height(copy.height), width(copy.width)
 {
 
+}
+
+neural_network::matrix::matrix(): height(0), width(0)
+{
 }
 
 neural_network::matrix::matrix(const size_t height, const size_t width): height(height), width(width)
@@ -14,6 +18,22 @@ neural_network::matrix::matrix(const size_t height, const size_t width): height(
 	for (int i = 0; i < height; i++)
 	{
 		data[i] = (double*)calloc(width, sizeof(double));
+	}
+}
+
+neural_network::matrix::matrix(const size_t height, const size_t width, const int seed): height(height), width(width)
+{
+	srand(seed);
+
+	if (height <= 0 || width <= 0)
+		throw std::logic_error("in matrix::matrix(const size_t, const size_t) logic error with negative matrix dimentions");
+
+	data = new double*[height];
+	for (int i = 0; i < height; i++)
+	{
+		data[i] = new double[width];
+		for (int j = 0; j < width;j++)
+			data[i][j] = double(rand()) / (double)RAND_MAX;
 	}
 }
 
@@ -59,7 +79,7 @@ neural_network::matrix neural_network::matrix::operator*(const double right) con
 {
 	matrix result = matrix(*this);
 
-	return result.for_each([&](double value) { return value*right; });
+	return *result.for_each([&](double value) { return value*right; });
 }
 
 neural_network::matrix neural_network::matrix::operator+(const matrix & right) const
@@ -84,7 +104,7 @@ neural_network::matrix neural_network::matrix::operator+(const matrix & right) c
 
 
 
-neural_network::matrix neural_network::matrix::for_each(std::function<double (double)> p)
+neural_network::matrix* neural_network::matrix::for_each(std::function<double (double)> p)
 {
 	for (int i = 0; i < height;i++)
 	{
@@ -94,16 +114,7 @@ neural_network::matrix neural_network::matrix::for_each(std::function<double (do
 		}
 	}
 
-	return *this;
-}
-
-neural_network::matrix neural_network::matrix::rand_init(const size_t height, const size_t width, const int seed)
-{
-	matrix result = matrix(height, width);
-
-	srand(seed);
-
-	return result.for_each([](double value) {return double(rand()) / (double)RAND_MAX; });
+	return this;
 }
 
 neural_network::matrix::~matrix()
@@ -112,4 +123,20 @@ neural_network::matrix::~matrix()
 		delete[] data[i];
 
 	delete[] data;
+}
+
+std::ostream & neural_network::operator<<(std::ostream & os,const matrix & m)
+{
+	os.precision(2);
+	for (size_t h = 0; h < m.height; h++)
+	{
+		os << "|";
+		for (size_t w = 0; w < m.width; w++)
+		{
+			os << m[h][w] << " |";
+		}
+		os << std::endl;
+	}
+
+	return os;
 }

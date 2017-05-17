@@ -1,7 +1,7 @@
 #pragma once
 #include "es.h"
-class es_wumpus_world :
-	public es
+
+class es_wumpus_world
 {
 public:
 	double mean_square_error(const void* solution, const void* w);

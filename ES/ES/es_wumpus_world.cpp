@@ -21,6 +21,7 @@ double es_wumpus_world::mean_square_error(const void * solution, const void * w)
 
 es_wumpus_world::es_wumpus_world()
 {
+
 }
 
 
