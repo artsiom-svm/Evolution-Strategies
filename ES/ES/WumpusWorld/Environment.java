@@ -1,0 +1,288 @@
+package WumpusWorld;/*
+ * Class that defines the environment.
+ * 
+ * Written by James P. Biagioni (jbiagi1@uic.edu)
+ * for CS511 Artificial Intelligence II
+ * at The University of Illinois at Chicago
+ * 
+ * Last modified 2/19/07 
+ * 
+ * DISCLAIMER:
+ * Elements of this application were borrowed from
+ * the client-server implementation of the Wumpus
+ * World Simulator written by Kruti Mehta at
+ * The University of Texas at Arlington.
+ * 
+ */
+
+import java.io.BufferedWriter;
+
+public class Environment {
+
+    private char[][][] wumpusWorld;
+    private char[][][] percepts;
+    private int worldSize;
+    private String bar;
+
+    private Agent agent;
+
+    private int[] prevAgentPosition;
+    private boolean bump;
+    private boolean scream;
+
+    public Environment(int size, char[][][] world) {
+
+        worldSize = size;
+
+        wumpusWorld = new char[worldSize][worldSize][4];
+        percepts = new char[worldSize][worldSize][4];
+
+        prevAgentPosition = getAgentLocation();
+
+        bump = false;
+        scream = false;
+
+        // store world definition
+        for (int i = 0; i < worldSize; i++) {
+            for (int j = 0; j < worldSize; j++) {
+                for (int k = 0; k < 4; k++) {
+                    wumpusWorld[i][j][k] = world[i][j][k];
+                }
+            }
+        }
+
+        // initialize percept map
+        for (int i = 0; i < worldSize; i++) {
+            for (int j = 0; j < worldSize; j++) {
+                for (int k = 0; k < 4; k++) {
+                    percepts[i][j][k] = ' ';
+                }
+            }
+        }
+
+        setPerceptMap();
+
+        // initialize bar to the empty string
+        bar = "";
+
+        // create divider bar for display output
+        for (int i = 0; i < (worldSize * 5) + worldSize - 1; i++) {
+            bar = bar + "-";
+        }
+
+    }
+
+    public int getWorldSize() {
+        return worldSize;
+    }
+
+    public char getAgentDirection() {
+
+        for (int i = 0; i < worldSize; i++) {
+            for (int j = 0; j < worldSize; j++) {
+                if (wumpusWorld[i][j][3] == 'A') return 'N';
+                if (wumpusWorld[i][j][3] == '>') return 'E';
+                if (wumpusWorld[i][j][3] == 'V') return 'S';
+                if (wumpusWorld[i][j][3] == '<') return 'W';
+            }
+        }
+
+        return '@';
+    }
+
+    public int[] getAgentLocation() {
+
+        int[] agentPos = new int[2];
+
+        for (int i = 0; i < worldSize; i++) {
+            for (int j = 0; j < worldSize; j++) {
+                if (wumpusWorld[i][j][3] != ' ') {
+                    agentPos[0] = i;
+                    agentPos[1] = j;
+                }
+            }
+        }
+
+        return agentPos;
+    }
+
+    public void placeAgent(Agent theAgent) {
+
+        wumpusWorld[prevAgentPosition[0]][prevAgentPosition[1]][3] = ' ';
+
+        agent = theAgent;
+        wumpusWorld[agent.getLocation()[0]][agent.getLocation()[1]][3] = agent.getAgentIcon();
+
+        prevAgentPosition[0] = agent.getLocation()[0];
+        prevAgentPosition[1] = agent.getLocation()[1];
+
+    }
+
+    public void setBump(boolean bumped) {
+        bump = bumped;
+    }
+
+    public boolean getBump() {
+        return bump;
+    }
+
+    public void setScream(boolean screamed) {
+        scream = screamed;
+    }
+
+    public boolean getScream() {
+        return scream;
+    }
+
+    public boolean getBreeze() {
+
+        if (percepts[agent.getLocation()[0]][agent.getLocation()[1]][0] == 'B') return true;
+        else return false;
+
+    }
+
+    public boolean getStench() {
+
+        if (percepts[agent.getLocation()[0]][agent.getLocation()[1]][1] == 'S') return true;
+        else return false;
+
+    }
+
+    public boolean getGlitter() {
+
+        if (percepts[agent.getLocation()[0]][agent.getLocation()[1]][2] == 'G') return true;
+        else return false;
+
+    }
+
+    public boolean grabGold() {
+
+        if (percepts[agent.getLocation()[0]][agent.getLocation()[1]][2] == 'G') {
+            percepts[agent.getLocation()[0]][agent.getLocation()[1]][2] = ' ';
+            wumpusWorld[agent.getLocation()[0]][agent.getLocation()[1]][2] = ' ';
+            return true;
+        }
+        return false;
+
+    }
+
+    public boolean checkDeath() {
+
+        if (wumpusWorld[agent.getLocation()[0]][agent.getLocation()[1]][0] == 'P') return true;
+        else if (wumpusWorld[agent.getLocation()[0]][agent.getLocation()[1]][1] == 'W') return true;
+
+        return false;
+
+    }
+
+    public boolean shootArrow() {
+
+        if (agent.getDirection() == 'N') {
+
+            for (int i = agent.getLocation()[0]; i < worldSize; i++) {
+                if (wumpusWorld[i][agent.getLocation()[1]][1] == 'W') {
+                    wumpusWorld[i][agent.getLocation()[1]][1] = '*';
+
+                    int x = i;
+                    int y = agent.getLocation()[1];
+
+                    if (x - 1 >= 0) percepts[x - 1][y][1] = ' ';
+                    if (x + 1 < worldSize) percepts[x + 1][y][1] = ' ';
+                    if (y - 1 >= 0) percepts[x][y - 1][1] = ' ';
+                    if (y + 1 < worldSize) percepts[x][y + 1][1] = ' ';
+
+                    //printPercepts();
+
+                    return true;
+                }
+            }
+        } else if (agent.getDirection() == 'E') {
+
+            for (int i = agent.getLocation()[1]; i < worldSize; i++) {
+                if (wumpusWorld[agent.getLocation()[0]][i][1] == 'W') {
+                    wumpusWorld[agent.getLocation()[0]][i][1] = '*';
+
+                    int x = agent.getLocation()[0];
+                    int y = i;
+
+                    if (x - 1 >= 0) percepts[x - 1][y][1] = ' ';
+                    if (x + 1 < worldSize) percepts[x + 1][y][1] = ' ';
+                    if (y - 1 >= 0) percepts[x][y - 1][1] = ' ';
+                    if (y + 1 < worldSize) percepts[x][y + 1][1] = ' ';
+
+                    //printPercepts();
+
+                    return true;
+                }
+            }
+        } else if (agent.getDirection() == 'S') {
+
+            for (int i = agent.getLocation()[0]; i >= 0; i--) {
+                if (wumpusWorld[i][agent.getLocation()[1]][1] == 'W') {
+                    wumpusWorld[i][agent.getLocation()[1]][1] = '*';
+
+                    int x = i;
+                    int y = agent.getLocation()[1];
+
+                    if (x - 1 >= 0) percepts[x - 1][y][1] = ' ';
+                    if (x + 1 < worldSize) percepts[x + 1][y][1] = ' ';
+                    if (y - 1 >= 0) percepts[x][y - 1][1] = ' ';
+                    if (y + 1 < worldSize) percepts[x][y + 1][1] = ' ';
+
+                    //printPercepts();
+
+                    return true;
+                }
+            }
+        } else if (agent.getDirection() == 'W') {
+
+            for (int i = agent.getLocation()[1]; i >= 0; i--) {
+                if (wumpusWorld[agent.getLocation()[0]][i][1] == 'W') {
+                    wumpusWorld[agent.getLocation()[0]][i][1] = '*';
+
+                    int x = agent.getLocation()[0];
+                    int y = i;
+
+                    if (x - 1 >= 0) percepts[x - 1][y][1] = ' ';
+                    if (x + 1 < worldSize) percepts[x + 1][y][1] = ' ';
+                    if (y - 1 >= 0) percepts[x][y - 1][1] = ' ';
+                    if (y + 1 < worldSize) percepts[x][y + 1][1] = ' ';
+
+                    //printPercepts();
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+    public void setPerceptMap() {
+
+        // World: Pit,Wumpus,Gold,WumpusWorld.Agent
+        // Percepts: Breeze,Stench,Glitter,Scream
+
+        for (int i = 0; i < worldSize; i++) {
+            for (int j = 0; j < worldSize; j++) {
+                for (int k = 0; k < 4; k++) {
+
+                    if (wumpusWorld[i][j][k] == 'P') {
+                        if (j - 1 >= 0) percepts[i][j - 1][k] = 'B';
+                        if (i + 1 < worldSize) percepts[i + 1][j][k] = 'B';
+                        if (j + 1 < worldSize) percepts[i][j + 1][k] = 'B';
+                        if (i - 1 >= 0) percepts[i - 1][j][k] = 'B';
+                    } else if (wumpusWorld[i][j][k] == 'W') {
+                        if (j - 1 >= 0) percepts[i][j - 1][k] = 'S';
+                        if (i + 1 < worldSize) percepts[i + 1][j][k] = 'S';
+                        if (j + 1 < worldSize) percepts[i][j + 1][k] = 'S';
+                        if (i - 1 >= 0) percepts[i - 1][j][k] = 'S';
+                    } else if (wumpusWorld[i][j][k] == 'G') percepts[i][j][k] = 'G';
+
+                }
+            }
+        }
+    }
+
+}
