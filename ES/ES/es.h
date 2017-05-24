@@ -1,5 +1,6 @@
 #pragma once
 #include "local_includes.h"
+#include "matrix.h"
 
 namespace es
 {
@@ -7,7 +8,7 @@ namespace es
 	{
 	private:
 		//current solution
-		double* current_guess;
+		neural_network::matrix current_guess;
 		//the size of the input data set
 		const size_t data_size;
 

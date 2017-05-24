@@ -1,18 +1,17 @@
 #include "es_example.h"
 
-
 double es_example::mean_square_error(const std::vector<double> guess) const
 {
-	/*
 	double result = 0;
-	
+
 	for (int i = 0; i < solution.size(); i++)
-		result += (solution[i] - guess[i]) * (solution[i] - guess[i]);
+	result += (solution[i] - guess[i]) * (solution[i] - guess[i]);
 
 	return -result;
-	*/
+}
 
-
+double es_example::f(const std::vector<double> guess) const
+{
 	jclass cls = env->FindClass("Main");
 	if (cls == nullptr)
 	{
@@ -21,6 +20,8 @@ double es_example::mean_square_error(const std::vector<double> guess) const
 		exit(EXIT_FAILURE);
 	}
 
+
+	
 	//create java double array
 	//6*6 + 5*6
 	size_t size = 66;
@@ -34,7 +35,7 @@ double es_example::mean_square_error(const std::vector<double> guess) const
 
 	env->ReleaseDoubleArrayElements(array, body, 0);
 
-	jmethodID id = env->GetMethodID(cls, "es_score", "([D)D");
+	jmethodID id = env->GetStaticMethodID(cls, "esScore", "([D)D");
 	if (id == nullptr)
 	{
 		std::cerr << "ERROR: Id not found!";
@@ -45,6 +46,10 @@ double es_example::mean_square_error(const std::vector<double> guess) const
 	double result = env->CallStaticDoubleMethod(cls, id, array);
 	
 	return result;
+
+	
+
+	return 0;
 }
 
 double es_example::mean(const std::vector<double> set) const
@@ -111,58 +116,57 @@ es_example::es_example(const std::vector<double> solution)
 	runVM();
 
 	this->solution = solution;
-	
+	distribution = std::normal_distribution<double>(0, 1);
+
 	for (auto& d : solution)
-		tries.push_back(double(rand()) / (double)RAND_MAX);
+		tries.push_back(distribution(generator));
 }
 
 es_example::es_example(const size_t size)
 {
 	runVM();
+
 	this->solution = std::vector<double>(size);
+	distribution = std::normal_distribution<double>(0, 1);
 
 	for (auto& d : solution)
-		tries.push_back(double(rand()) / (double)RAND_MAX);
+		tries.push_back(distribution(generator));
 }
 
 void es_example::evolve()
 {
 	//create a sample set of tries
-	std::vector<std::vector<double>> n_tries;
+	std::vector<std::vector<double>> N;
 	//create learining error-means
 	std::vector<double> R(es_example::npop);
 	//normalized learning vector
 	std::vector<double> A(es_example::npop);
-	
-	//normal random N(0,1)
-	std::default_random_engine generator;
-	std::normal_distribution<double> distribution(0, 1);
 
 
 	//creates npop random guesses to solution
 	for (size_t i = 0; i < es_example::npop; i++)
 	{
-		std::vector<double> ntry;
+		std::vector<double> ntry(this->tries.size());
 		for (size_t j = 0; j < this->tries.size(); j++)
 		{
-			ntry.push_back(distribution(generator));
+			ntry[j] = distribution(generator);
 		}
-		n_tries.push_back(ntry);
+		N.push_back(ntry);
 	}
 
 	//iterate random error-means
 	for (size_t i = 0; i < es_example::npop; i++)
 	{
 		//create new guess matrix with noise deviation from current truth
-		std::vector<double> w_try(n_tries[i].size());
+		std::vector<double> w_try(N[i].size());
 		
-		for (size_t j = 0; j < n_tries[i].size();j++)
+		for (size_t j = 0; j < N[i].size();j++)
 		{
-			w_try[j] = this->tries[j] + es_example::sigma * n_tries[i][j];
+			w_try[j] = this->tries[j] + es_example::sigma * N[i][j];
 		}
 
 		//push the learning rate from guess
-		R[i] = mean_square_error(w_try);
+		R[i] = f(w_try);
 	}
 
 	//normalizy learing vector
@@ -180,7 +184,7 @@ void es_example::evolve()
 		auto dot = 0;
 		for (size_t j = 0; j < es_example::npop; j++)
 		{
-			dot += A[j] * n_tries[j][i];
+			dot += A[j] * N[j][i];
 		}
 
 		//update of value
@@ -200,7 +204,39 @@ std::vector<double> es_example::getApproximation() const
 	return tries;
 }
 
+void es_example::output_data(const std::string filename, const size_t index) const
+{
+	jclass cls = env->FindClass("Main");
+	if (cls == nullptr)
+	{
+		std::cerr << "ERROR: class not found!";
+		std::cin.get();
+		exit(EXIT_FAILURE);
+	}
+
+	jmethodID id = env->GetStaticMethodID(cls, "outputData", "([DI)V");
+	if (id == nullptr)
+	{
+		std::cerr << "ERROR: Id not found!";
+		std::cin.get();
+		exit(EXIT_FAILURE);
+	}
+
+	size_t size = 66;
+	jdoubleArray array = env->NewDoubleArray(size);
+	jdouble* body = env->GetDoubleArrayElements(array, 0);
+
+	for (size_t i = 0; i < size; i++)
+	{
+		body[i] = this->tries[i];
+	}
+
+	env->ReleaseDoubleArrayElements(array, body, 0);
+
+	env->CallStaticVoidMethod(cls, id, array, (jint)index);
+}
+
 es_example::~es_example()
 {
-
+	jvm->DestroyJavaVM();
 }

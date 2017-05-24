@@ -1,5 +1,6 @@
 #include "es.h"
 
+
 double es::es::mean(const double * data) const
 {
 	double result = 0;
@@ -42,101 +43,57 @@ double es::es::f(const double * guess) const
 void es::es::evolve()
 {
 	//create a sample set of tries
-	double** n_tries = new double*[es::npop];
+	neural_network::matrix N([&]() {return es::distribution(es::generator); }, es::npop, data_size);
 	//create learining error-means
-	double* R = new double[es::npop];
+	neural_network::matrix R([]() {return 0; }, es::npop, 1);
 	//normalized learning vector
-	double* A = new double[es::npop];
+	neural_network::matrix A(es::npop, 1);
 
-	//normal random N(0,1)
-	std::default_random_engine generator;
-	std::normal_distribution<double> distribution(0, 1);
-
-	//creates npop random guesses to solution
-	for (size_t i = 0; i < es::npop; i++)
-	{
-		n_tries[i] = new double[data_size];
-		
-		for (int j = 0; j < data_size; j++)
-		{
-			n_tries[i][j] = distribution(generator);
-		}
-	}
-
-
-	//temp assignment
-	//create new guess solution
-	double* w_try = new double[data_size];
-	
 	//iterate award for random generated deviation from current guess
 	for (size_t i = 0; i < es::npop; i++)
 	{
-
 		//add noise deviation from random generated matrix
-		for (size_t j = 0; j < data_size; j++)
-		{
-			w_try[j] = current_guess[j] + es::sigma * n_tries[i][j];
-		}
+		auto row = neural_network::matrix(N[i], 1, data_size);
+		auto w_try = current_guess + row*es::sigma;
 
 		//calculate award for new guess
-		R[i] = f(w_try);
+		R[i][0] = f((double*)w_try);
 	}
-	//free memory from temp assignment
-	delete[] w_try;
 
 	//normalizy learing vector
-	auto mean = this->mean(R);
-	auto std = this->std(R);
+	auto mean = this->mean((double*)R);
+	auto std = this->std((double*)R);
+
 	for (size_t i = 0; i < es::npop; i++)
 	{
-		A[i] = (R[i] - mean) / std;
+		A[i][0] = (R[i][0] - mean) / std;
 	}
 
 	//update guess solution
-	for (size_t i = 0; i < data_size; i++)
-	{
-		// dot = n_tries^T * A
-		//dot product of noise and learning vector
-		auto dot = 0;
-		for (size_t j = 0; j < es::npop; j++)
-		{
-			dot += A[j] * n_tries[j][i];
-		}
+	// dot = n_tries^T * A
+	//dot product of noise and learning vector
+	auto dot = N.transpose() * A;		
+	//update of value
+	current_guess += dot * (es::alpha / (es::sigma * es::npop));
 
-		//update of value
-		current_guess[i] += es::alpha / (es::sigma * es::npop) * dot;
-	}
-
-
-	//free the memory
-	for (size_t i = 0; i < es::npop; i++)
-	{
-		delete[] n_tries[i];
-	}
-	delete[] n_tries;
-	delete[] R;
-	delete[] A;
+	
+	
 }
 
 double * es::es::get_current_guess() const
 {
-	return current_guess;
+	return (double*)current_guess;
 }
 
-es::es::es(const size_t size) : data_size(size)
+es::es::es(const size_t size) : data_size(size), distribution(std::normal_distribution<double>(0, 1)), current_guess(1, size)
 {
 	if (size <= 0)
 		throw std::logic_error("ERROR: Trying to create model with non-positive size of data set\n");
-	distribution = std::normal_distribution<double>(0, 1);
 
-	current_guess = new double[data_size];
 	for (size_t i = 0; i < data_size; i++)
-	{
-		current_guess[i] = distribution(generator);
-	}
+		current_guess[0][i] = distribution(generator);
 }
 
 es::es::~es()
 {
-	delete[] current_guess;
 }

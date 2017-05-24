@@ -2,7 +2,16 @@
 
 neural_network::matrix::matrix(const matrix & copy):height(copy.height), width(copy.width)
 {
-
+	this->data = new double*[height];
+	
+	for (size_t i = 0; i < height; i++)
+	{
+		this->data[i] = new double[width];
+		for (size_t j = 0; j < width; j++)
+		{
+			this->data[i][j] = copy[i][j];
+		}
+	}
 }
 
 neural_network::matrix::matrix(): height(0), width(0)
@@ -21,19 +30,43 @@ neural_network::matrix::matrix(const size_t height, const size_t width): height(
 	}
 }
 
-neural_network::matrix::matrix(const size_t height, const size_t width, const int seed): height(height), width(width)
+neural_network::matrix::matrix(const double ** data, const size_t height, const size_t width): height(height), width(width)
 {
-	srand(seed);
+	this->data = new double*[height];
 
-	if (height <= 0 || width <= 0)
-		throw std::logic_error("in matrix::matrix(const size_t, const size_t) logic error with negative matrix dimentions");
-
-	data = new double*[height];
-	for (int i = 0; i < height; i++)
+	for (size_t i = 0; i < height; i++)
 	{
-		data[i] = new double[width];
-		for (int j = 0; j < width;j++)
-			data[i][j] = double(rand()) / (double)RAND_MAX;
+		this->data[i] = new double[width];
+		for (size_t j = 0; j < width; j++)
+		{
+			this->data[i][j] = data[i][j];
+		}
+	}
+}
+
+neural_network::matrix::matrix(const double * data, const size_t height, const size_t width): height(height), width(width)
+{
+	this->data = new double*[height];
+	size_t index = 0;
+	for (size_t i = 0; i < height; i++)
+	{
+		this->data[i] = new double[width];
+		for (size_t j = 0; j < width; j++)
+		{
+			this->data[i][j] = data[index++];
+		}
+	}
+}
+
+neural_network::matrix::matrix(const std::function<double()> p, const size_t height, const size_t width): height(height), width(width)
+{
+	this->data = new double*[height];
+
+	for (size_t i = 0; i < height; i++)
+	{
+		this->data[i] = new double[width];
+		for (size_t j = 0; j < width; j++)
+			this->data[i][j] = p();
 	}
 }
 
@@ -102,9 +135,35 @@ neural_network::matrix neural_network::matrix::operator+(const matrix & right) c
 	return result;
 }
 
+neural_network::matrix neural_network::matrix::operator-(const matrix & right) const
+{
+	if (this->height != right.height || this->width != right.width)
+	{
+		throw std::logic_error("at neural_network::matrix::operator+(const matrix&) logic error, missmatch of dimensions");
+	}
 
+	matrix m(*this);
+	for (size_t i = 0; i < height; i++)
+	{
+		for (size_t j = 0; j < width; j++)
+		{
+			m[i][j] -= right[i][j];
+		}
+	}
 
-neural_network::matrix* neural_network::matrix::for_each(std::function<double (double)> p)
+	return m;
+}
+
+neural_network::matrix & neural_network::matrix::operator+=(const matrix & right)
+{
+	for (size_t i = 0; i < height; i++)
+		for (size_t j = 0; j < width; j++)
+			data[i][j] += right[i][j];
+
+	return *this;
+}
+
+neural_network::matrix* neural_network::matrix::for_each(const std::function<double (double)> p)
 {
 	for (int i = 0; i < height;i++)
 	{
@@ -115,6 +174,47 @@ neural_network::matrix* neural_network::matrix::for_each(std::function<double (d
 	}
 
 	return this;
+}
+
+neural_network::matrix neural_network::matrix::transpose()
+{
+	matrix answ(width, height);
+
+	for (size_t i = 0; i < width; i++)
+		for (size_t j = 0; j < height; j++)
+			answ[i][j] = data[j][i];
+
+	return answ;
+}
+
+neural_network::matrix::operator double*() const
+{
+	size_t index = 0;
+	double* array = new double[height*width];
+	for (size_t i = 0; i < height; i++)
+		for (size_t j = 0; j < width; j++)
+			array[index++] = data[i][j];
+
+	return array;
+}
+
+const size_t neural_network::matrix::get_height() const
+{
+	return this->height;
+}
+
+const size_t neural_network::matrix::get_width() const
+{
+	return this->width;
+}
+
+neural_network::matrix neural_network::matrix::rand_init(const size_t height, const size_t width, const int seed)
+{
+	srand(seed);
+	
+	matrix m(height, width);
+
+	return *m.for_each([&](double d) { return double(rand()) / (double)RAND_MAX; });
 }
 
 neural_network::matrix::~matrix()

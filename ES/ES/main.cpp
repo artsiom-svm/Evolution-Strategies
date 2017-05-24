@@ -5,6 +5,7 @@
 #include "matrix.h"
 #include "es_example.h"
 
+
 std::ostream& operator<<(std::ostream& os, const std::vector<double>& set)
 {
 	os << '[';
@@ -45,19 +46,42 @@ int main1()
 int main()
 {
 
-	try {
-		//example of es on line vector
-		std::vector < double> solution = { 0.5, 0.2, -0.3};
-		es_example t(66);
+	std::vector<es_example> v;
 
-		std::cout << "Real solution : " << solution << std::endl;
+	try {
+		es::es es(3);
+		es.evolve();
+
+		/*
+		std::cout << "Using ML ES:\n";
+		for (int i = 0; i <= 300; i++)
+		{
+			if (i % 100 == 0)
+			{
+				std::cout << "iter " << i << ": ";
+				print(es.get_current_guess(),3);
+				std::cout << " w\\ stderr: " << es.f(es.get_current_guess()) << std::endl;
+			}
+			es.evolve();
+
+			//t.output_data("", i);
+		}
+		return 0;
+		*/
+
+		
+		es_example t(66);	
 
 		std::cout << "Using ML ES:\n";
-		for (int i = 0; i < 300; i++)
+		for (int i = 0;; i++)
 		{
+			if (i % 50 == 0)
+			{
+				std::cout << "iter " << i << ": " << " w\\ stderr: " << t.f(t.getApproximation())<< std::endl;
+			}
 			t.evolve();
-			if (i % 20 == 0)
-				std::cout << "iter " << i << ": "<< " w\\ stderr: " << t.mean_square_error(t.getApproximation())<< std::endl;
+			
+			t.output_data("", i);
 		}
 
 	}

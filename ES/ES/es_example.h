@@ -17,6 +17,10 @@ class es_example
 	//current best guess
 	std::vector<double> tries;
 
+	//normal random N(0,1)
+	std::default_random_engine generator;
+	std::normal_distribution<double> distribution;
+
 	//java environment variables
 	JavaVM *jvm;                      // Pointer to the JVM (Java Virtual Machine)
 	JNIEnv *env;                      // Pointer to native interface
@@ -26,6 +30,7 @@ class es_example
 	double std(const std::vector<double> set) const;
 	void runVM();
 public:
+	double es_example::f(const std::vector<double> guess) const;
 
 	double mean_square_error(const std::vector<double> guess) const;
 	es_example(const std::vector<double> solution);
@@ -33,6 +38,8 @@ public:
 	void evolve();
 	std::vector<double> getSolution() const;
 	std::vector<double> getApproximation() const;
+
+	void output_data(const std::string filename, const size_t index) const;
 	~es_example();
 };
 

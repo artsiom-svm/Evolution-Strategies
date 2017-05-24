@@ -22,9 +22,7 @@ public class Main {
 
     }
 
-    public double es_score(double[] data) {
-        Session session = new Session(0);
-
+    private static Network createNetwork(double[] data, Session session) {
         Network nn = session.getNetwork();
 
         Matrix left = nn.layers.get(0).left;
@@ -42,11 +40,30 @@ public class Main {
             for (int j = 0; j < right.getWidth(); j++)
                 right.set(data[index++], i, j);
 
-        nn.layers.add(new Layer(left,right, null));
+        nn.layers.add(new Layer(left, right, null));
+
+        return nn;
+    }
+
+
+    public static double esScore(double[] data) {
+        Session session = new Session(0);
+
+        Network nn = createNetwork(data,session);
 
         session.setNetwork(nn);
 
-        return session.getScore(10000);
+        return -1000 + session.getScore(1000);
+    }
+
+    public static void outputData(double[] data, int index) {
+        Session session = new Session(0);
+
+        Network nn = createNetwork(data,session);
+
+        session.setNetwork(nn);
+
+        outputData("data.txt",session,index);
     }
 
     private static void WumpusLearning(long seed) {
