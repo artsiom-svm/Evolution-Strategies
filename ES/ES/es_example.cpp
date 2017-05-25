@@ -130,7 +130,7 @@ es_example::es_example(const size_t size)
 	distribution = std::normal_distribution<double>(0, 1);
 
 	for (auto& d : solution)
-		tries.push_back(distribution(generator));
+		tries.push_back(1);
 }
 
 void es_example::evolve()
